@@ -1,0 +1,25 @@
+- hosts: appServers
+  become: true
+
+  tasks:
+    - name: Install apache2
+      apt:
+        name: apache2
+        state: present
+      tags:
+        - install    
+
+    - name: Copy index.html
+      template:              # Use copy unless it's a Jinja2 template
+        src: index.html
+        dest: /var/www/html/index.html
+      notify:
+        - Restart apache2 service
+      tags:
+        - Copy    
+
+  handlers:
+    - name: Restart apache2 service
+      service:
+        name: apache2
+        state: restarted
