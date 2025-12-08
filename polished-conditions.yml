@@ -1,0 +1,20 @@
+- hosts: all
+  become: yes
+
+  tasks:
+
+    - name: Check if Java is installed
+      shell: java -version 2>&1 | grep version | awk '{print $3}' | sed 's/"//g'
+      register: java_version
+      ignore_errors: true
+
+    - name: Print installed Java version
+      debug:
+        msg: "Java version: {{ java_version.stdout }}"
+      when: java_version.stdout != ""
+
+    - name: Install Java 11 if not installed
+      apt:
+        name: openjdk-11-jdk
+        state: present
+      when: java_version.stdout == ""
