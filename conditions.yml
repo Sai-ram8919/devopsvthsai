@@ -1,0 +1,16 @@
+- hosts: all
+  tasks:
+   - name: install java 11
+     shell: java -version 2>&1 | grep version | awk '{print $3}' | sed 's/"//g"
+     register: java_version
+     ingnore_errors: true
+   - name: print java_version
+     debug:
+       msg: "{{java_version}}"
+   - name: install java if not already installed
+     apt:
+       name: openjdk-11-jdk
+       state: present
+  when: java_version.stdout == ""
+        
+    
